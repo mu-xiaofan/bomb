@@ -1,0 +1,62 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0304
+header_name {.h}
+code_name {.cpp}
+Function {make_window()} {open
+} {
+  Fl_Window {} {open
+    xywh {1 237 225 225} type Double hide
+  } {
+    Fl_Box field {
+      xywh {0 0 225 225}
+      code0 {\#include <FL/Fl_PNG_Image.H>}
+      code1 {Fl_PNG_Image* bg = new Fl_PNG_Image("field.png");}
+      code2 {field->image( bg );}
+    }
+    Fl_Box bb {
+      xywh {102 205 10 20}
+      code0 {\#include <FL/Fl_PNG_Image.H>}
+      code1 {Fl_PNG_Image* bi = new Fl_PNG_Image("l.png");}
+      code2 {bb->image(bi);}
+    }
+    Fl_Button {} {
+      label Go
+      callback {std::cout << "ouch" <<std::endl;
+Fl::add_timeout(1.0, move);}
+      xywh {5 205 70 20}
+      code0 {\#include <iostream>}
+    }
+    Fl_Value_Input initial_v {
+      label initial_v
+      xywh {60 16 40 24} color 172 labelcolor 131
+    }
+  }
+}
+
+Function {move(void*)} {open return_type void
+} {
+  code {// initialize these values only the first time
+static double dt = 0.01;
+static double x = bb->parent()->w()/2 - bb->w()/2;    //center
+static double y = bb->parent()->h() -bb->h();   //bottom
+static double s=0;
+static double v0 = initial_v->value();//get input
+static double v=v0;
+static const double g=-9.81;// it is easier to calculate when we use the negative.
+v+=g*dt;//the reason wht it is plus g is that we used g=-9.81.
+s+=v*dt;
+
+y = bb->parent()->h()-s-bb->h();//translate s into y.
+
+
+bb->position(x,y);// the position in the x-y coordinary system
+bb->parent()->redraw();
+std::cout<<"distance: "<<s <<std::endl;
+std::cout<<"now the velocity is : "<<v<<std::endl;
+
+if(s>0)//to control it to hit the earth.
+{
+Fl::repeat_timeout(0.01, move);
+}} {selected
+  }
+}
